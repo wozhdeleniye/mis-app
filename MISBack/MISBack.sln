@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34316.72
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MISBack", "MISBack\MISBack.csproj", "{B755967E-7C57-494A-8665-17DD43E7760B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B755967E-7C57-494A-8665-17DD43E7760B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B755967E-7C57-494A-8665-17DD43E7760B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B755967E-7C57-494A-8665-17DD43E7760B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B755967E-7C57-494A-8665-17DD43E7760B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7263F5E7-8CD4-40FF-90ED-EE4FC5FB7EC7}
+	EndGlobalSection
+EndGlobal

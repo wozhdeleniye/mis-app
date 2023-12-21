@@ -1,0 +1,6 @@
+@MISBack_HostAddress = http://localhost:5223
+
+GET {{MISBack_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
