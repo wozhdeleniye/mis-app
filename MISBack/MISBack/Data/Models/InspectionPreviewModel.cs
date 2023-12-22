@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MISBack.Data.Enums;
 
 namespace MISBack.Data.Models
 {

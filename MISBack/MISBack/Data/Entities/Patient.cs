@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using MISBack.Data.Enums;
+﻿using MISBack.Data.Enums;
+using System.ComponentModel.DataAnnotations;
 
-namespace MISBack.Data.Models
+namespace MISBack.Data.Entities
 {
-    public class PatientModel
+    public class Patient
     {
+        [Key]
         [Required]
         public Guid id { get; set; }
         [Required]
