@@ -1,9 +1,43 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MISBack.Data;
+using MISBack.Services;
+using MISBack.Services.Interfaces;
+using MISBack.Services.ValidateTokenPolicy;
+using MISBack.Configs;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+// Services
+builder.Services.AddScoped<IDoctorsService, DoctorsService>();
+
+// Auth
+builder.Services.AddSingleton<IAuthorizationHandler, ValidateTokenRequirementHandler>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(
+        "ValidateToken",
+        policy => policy.Requirements.Add(new ValidateTokenRequirement()));
+});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = JwtConfigurations.Issuer,
+            ValidateAudience = true,
+            ValidAudience = JwtConfigurations.Audience,
+            ValidateLifetime = true,
+            IssuerSigningKey = JwtConfigurations.GetSymmetricSecurityKey(),
+            ValidateIssuerSigningKey = true,
+        };
+    });
 
 // DB
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
