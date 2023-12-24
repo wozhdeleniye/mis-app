@@ -7,6 +7,7 @@ using MISBack.Services;
 using MISBack.Services.Interfaces;
 using MISBack.Services.ValidateTokenPolicy;
 using MISBack.Configs;
+using MISBack.Services.ExceptionHandler;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,14 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Middleware Exceptions
+app.UseExceptionHandlerMiddleware();
+
+// Auto Migration
+using var serviceScope = app.Services.CreateScope();
+var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
+context?.Database.Migrate();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

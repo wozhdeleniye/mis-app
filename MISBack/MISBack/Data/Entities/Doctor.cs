@@ -22,6 +22,9 @@ namespace MISBack.Data.Entities
         [Phone]
         public string? phone {  get; set; }
         [Required]
+        [MinLength(6)]
+        public string password { get; set; }
+        [Required]
         public Guid speciality { get; set; }
     }
 }
