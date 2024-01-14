@@ -5,7 +5,7 @@ namespace MISBack.Data.Models;
 public class Icd10RecordModel
 {
     [Required]
-    public Guid id { get; set; }
+    public int id { get; set; }
     
     [Required]
     public DateTime createTime { get; set; }

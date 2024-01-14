@@ -20,16 +20,20 @@ namespace MISBack.Controllers
 
         [HttpPost]
         [Route("register")]
-        public async Task<TokenResponseModel> RegisterDoctor([FromBody] DoctorRegisterModel docRegisterForm)
+        public async Task<IActionResult> RegisterDoctor([FromBody] DoctorRegisterModel docRegisterForm)
         {
-            return await _docsService.RegisterDoc(docRegisterForm);
+            if(!ModelState.IsValid) return BadRequest(ModelState);
+            var newDoctor = await _docsService.RegisterDoc(docRegisterForm);
+            return Ok(newDoctor);
         }
 
         [HttpPost]
         [Route("login")]
-        public async Task<TokenResponseModel> LoginDoctor([FromBody] LoginCredentialsModel docLoginForm)
+        public async Task<IActionResult> LoginDoctor([FromBody] LoginCredentialsModel docLoginForm)
         {
-            return await _docsService.LoginDoc(docLoginForm);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var doctor = await _docsService.LoginDoc(docLoginForm);
+            return Ok(doctor);
         }
 
         [HttpPost]
@@ -61,10 +65,12 @@ namespace MISBack.Controllers
         [Authorize(Policy = "ValidateToken")]
         [Route("profile")]
         [SwaggerOperation(Summary = "Edit user Profile")]
-        public async Task EditDoctorProfile([FromBody] DoctorEditModel docEditModel)
+        public async Task<IActionResult> EditDoctorProfile([FromBody] DoctorEditModel docEditModel)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             await _docsService.EditDocProfile(
                 Guid.Parse(User.Identity.Name), docEditModel);
+            return Ok();
         }
     }
 }

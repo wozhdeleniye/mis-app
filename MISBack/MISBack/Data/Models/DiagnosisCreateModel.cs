@@ -6,7 +6,7 @@ namespace MISBack.Data.Models;
 public class DiagnosisCreateModel
 {
     [Required]
-    public Guid icdDiagnosisId { get; set; }
+    public int icdDiagnosisId { get; set; }
     
     [MaxLength(5000)]
     public string? description { get; set; }

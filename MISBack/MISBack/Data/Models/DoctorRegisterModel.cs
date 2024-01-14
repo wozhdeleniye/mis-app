@@ -1,27 +1,31 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using MISBack.Data.Enums;
+using MISBack.Services.ExceptionHandler;
+using MISBack.Services.Validation;
+using Newtonsoft.Json.Converters;
 
 namespace MISBack.Data.Models;
 
-public class DoctorRegisterModel
+public class DoctorRegisterModel 
 {
-    [Required]
-    [MaxLength(1000)]
-    [MinLength(1)]
+    [StringLength(maximumLength: 200, MinimumLength = 1)]
     public string name { get; set; }
-    
-    [Required]
-    [MinLength(6)]
+
+    [StringLength(maximumLength: 100, MinimumLength = 6, ErrorMessage = EntityConstants.ShortOrLongPasswordError)]
+    [RegularExpression(pattern: EntityConstants.PasswordRegex,
+        ErrorMessage = EntityConstants.IncorrectPasswordError)]
     public string password { get; set; }
-    
-    [Required]
-    [MinLength(1)]
-    [EmailAddress]
+
+    [StringLength(maximumLength: 100, MinimumLength = 5, ErrorMessage = EntityConstants.ShortOrLongEmailError)]
+    [EmailAddress(ErrorMessage = EntityConstants.IncorrectEmailError)]
     public string email { get; set; }
-    
+
+    [ValideDateTime(ErrorMessage = EntityConstants.IncorrectDateError)]
     public DateTime? birthDate { get; set; }
     
     [Required]
+    [EnumDataType(typeof(Gender), ErrorMessage = EntityConstants.IncorrectGenderError)]
     public Gender gender { get; set; }
     
     [Phone]

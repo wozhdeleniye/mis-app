@@ -8,13 +8,26 @@ using MISBack.Services.Interfaces;
 using MISBack.Services.ValidateTokenPolicy;
 using MISBack.Configs;
 using MISBack.Services.ExceptionHandler;
+using Microsoft.OpenApi.Models;
+using AutoMapper;
+using MISBack.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+// AutoMapper
+var mapperConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
+var mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
+builder.Services.AddMvc();
+
 // Services
 builder.Services.AddScoped<IDoctorsService, DoctorsService>();
+builder.Services.AddScoped<IPatientsService, PatientsService>();
+builder.Services.AddScoped<IInspectionsService, InspectionsService>();
+builder.Services.AddScoped<IDictionariesService, DictionariesService>();
+builder.Services.AddScoped<IConsultationsService, ConsultationsService>();
 
 // Auth
 builder.Services.AddSingleton<IAuthorizationHandler, ValidateTokenRequirementHandler>();
@@ -40,14 +53,42 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
 // DB
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connection));
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(opt =>
+{
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+    opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "bearer"
+    });
+    opt.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 var app = builder.Build();
 

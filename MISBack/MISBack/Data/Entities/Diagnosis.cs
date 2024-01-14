@@ -18,6 +18,8 @@ namespace MISBack.Data.Entities
         public DiagnosisType type { get; set; }
 
         [Required]
-        public Guid icd10Id { get; set; }
+        public int icd10Id { get; set; }
+        [Required]
+        public Guid InspectionId {  get; set; }
     }
 }

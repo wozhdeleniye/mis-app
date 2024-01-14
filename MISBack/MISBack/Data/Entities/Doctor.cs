@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MISBack.Data.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MISBack.Data.Entities
 {
@@ -13,7 +14,7 @@ namespace MISBack.Data.Entities
         public DateTime createTime { get; set; }
         [Required]
         public string name {  get; set; }
-        public DateTime? birthday {  get; set; }
+        public DateTime? birthDate {  get; set; }
         [Required]
         public Gender gender {  get; set; }
         [Required]

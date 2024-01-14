@@ -9,16 +9,19 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using MISBack.Configs;
 using System.IdentityModel.Tokens.Jwt;
+using AutoMapper;
 
 namespace MISBack.Services
 {
     public class DoctorsService : IDoctorsService
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public DoctorsService(AppDbContext context)
+        public DoctorsService(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<TokenResponseModel> RegisterDoc(DoctorRegisterModel docRegisterModel)
@@ -36,29 +39,36 @@ namespace MISBack.Services
             Array.Copy(hash, 0, hashBytes, 16, 20);
             var savedPasswordHash = Convert.ToBase64String(hashBytes);
 
-            if(docRegisterModel.gender == null)
+            var ex = new Exception();
+            
+
+            var specEntity = await _context
+                .Specialities
+                .FirstOrDefaultAsync(x => x.id == docRegisterModel.speciality);
+            if (specEntity == null)
             {
-                var ex = new Exception();
                 ex.Data.Add(StatusCodes.Status409Conflict.ToString(),
-                    $"Possible Gender values: Male, Female");
+                    $"No specialities with this Id was found");
                 throw ex;
             }
-            CheckBirthDate(docRegisterModel.birthDate);
 
-            await _context.Doctors.AddAsync(new Doctor
+            if (docRegisterModel != null)
             {
-                id = Guid.NewGuid(),
-                createTime = DateTime.Now,
-                name = docRegisterModel.name,
-                birthday = docRegisterModel?.birthDate,
-                gender = docRegisterModel.gender,
-                email = docRegisterModel.email,
-                phone = docRegisterModel.phone,
-                password = savedPasswordHash,
-                speciality = docRegisterModel.speciality
-            });
-            await _context.SaveChangesAsync();
-
+                await _context.Doctors.AddAsync(new Doctor
+                {
+                    id = Guid.NewGuid(),
+                    createTime = DateTime.Now,
+                    name = docRegisterModel.name,
+                    birthDate = docRegisterModel.birthDate,
+                    gender = docRegisterModel.gender,
+                    email = docRegisterModel.email,
+                    phone = docRegisterModel.phone,
+                    password = savedPasswordHash,
+                    speciality = docRegisterModel.speciality
+                });
+                await _context.SaveChangesAsync();
+            }
+            
             var credentials = new LoginCredentialsModel
             {
                 email = docRegisterModel.email,
@@ -97,7 +107,48 @@ namespace MISBack.Services
 
         public async Task EditDocProfile(Guid docId, DoctorEditModel docEditModel)
         {
-            throw new NotImplementedException();
+            var docEntity = await _context
+            .Doctors
+            .FirstOrDefaultAsync(x => x.id == docId);
+
+            if (docEntity == null)
+            {
+                var ex = new Exception();
+                ex.Data.Add(StatusCodes.Status401Unauthorized.ToString(),
+                    "User not exists"
+                );
+                throw ex;
+            }
+            if(docEntity.email != docEditModel.email)
+            {
+                CheckMail(docEditModel.email);
+                docEntity.email = docEditModel.email;
+            }
+            CheckBirthDate(docEditModel.birthDate);
+            
+            docEntity.name = docEditModel.name;
+            docEntity.birthDate = docEditModel.birthDate;
+            docEntity.gender = docEditModel.gender;
+            docEntity.phone = docEditModel.phone;
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task CheckMail(string mail)
+        {
+            var email = await _context
+                .Doctors
+                .Where(x => mail == x.email)
+                .FirstOrDefaultAsync();
+
+            if (email != null)
+            {
+                var ex = new Exception();
+                ex.Data.Add(StatusCodes.Status409Conflict.ToString(),
+                    $"Account with email '{mail}' already exists"
+                );
+                throw ex;
+            }
         }
 
         public async Task<DoctorModel> GetDocProfile(Guid docId)
@@ -107,16 +158,7 @@ namespace MISBack.Services
             .FirstOrDefaultAsync(x => x.id == docId);
 
             if (docEntity != null)
-                return new DoctorModel
-                {
-                    id = docEntity.id,
-                    createTime = docEntity.createTime,
-                    name = docEntity.name,
-                    birthDate = docEntity.birthday,
-                    gender = docEntity.gender,
-                    email = docEntity.email,
-                    phone = docEntity.phone
-                };
+                return _mapper.Map<DoctorModel>(docEntity);
 
             var ex = new Exception();
             ex.Data.Add(StatusCodes.Status401Unauthorized.ToString(),

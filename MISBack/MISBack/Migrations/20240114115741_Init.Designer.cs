@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MISBack.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231222105436_2")]
-    partial class _2
+    [Migration("20240114115741_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,10 +43,10 @@ namespace MISBack.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("modifiedDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("parentId")
                         .HasColumnType("uuid");
@@ -71,7 +71,7 @@ namespace MISBack.Migrations
                         .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid?>("inspectionId")
                         .HasColumnType("uuid");
@@ -90,14 +90,17 @@ namespace MISBack.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("InspectionId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("description")
                         .HasColumnType("text");
 
-                    b.Property<Guid>("icd10Id")
-                        .HasColumnType("uuid");
+                    b.Property<int>("icd10Id")
+                        .HasColumnType("integer");
 
                     b.Property<int>("type")
                         .HasColumnType("integer");
@@ -113,11 +116,11 @@ namespace MISBack.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime?>("birthday")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("birthDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("email")
                         .IsRequired()
@@ -127,6 +130,10 @@ namespace MISBack.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("password")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -143,18 +150,23 @@ namespace MISBack.Migrations
 
             modelBuilder.Entity("MISBack.Data.Entities.Icd10", b =>
                 {
-                    b.Property<Guid>("id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("id"));
 
                     b.Property<string>("code")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("createTime")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("name")
                         .HasColumnType("text");
+
+                    b.Property<int?>("parentId")
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -171,7 +183,7 @@ namespace MISBack.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("baseInspectionId")
+                    b.Property<Guid>("baseInspectionId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("complaints")
@@ -182,19 +194,19 @@ namespace MISBack.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("date")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime?>("deathDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("docId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("nextVisitDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("patientId")
                         .HasColumnType("uuid");
@@ -218,10 +230,10 @@ namespace MISBack.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime?>("birthday")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("gender")
                         .HasColumnType("integer");
@@ -242,7 +254,7 @@ namespace MISBack.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("createTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("name")
                         .IsRequired()
@@ -251,6 +263,19 @@ namespace MISBack.Migrations
                     b.HasKey("id");
 
                     b.ToTable("Specialities");
+                });
+
+            modelBuilder.Entity("MISBack.Data.Entities.Token", b =>
+                {
+                    b.Property<string>("InvalidToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiredDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("InvalidToken");
+
+                    b.ToTable("Tokens");
                 });
 #pragma warning restore 612, 618
         }
