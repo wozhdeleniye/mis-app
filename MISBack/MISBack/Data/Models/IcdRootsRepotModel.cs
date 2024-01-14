@@ -6,5 +6,5 @@ public class IcdRootsRepotModel
     
     public List<IcdRootsReportRecordModel>? records { get; set; }
     
-    public List<int>? summaryByRoot { get; set; }
+    public Dictionary<String, int>? summaryByRoot { get; set; }
 }

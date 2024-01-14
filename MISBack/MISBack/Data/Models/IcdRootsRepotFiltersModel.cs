@@ -2,7 +2,7 @@
 
 public class IcdRootsRepotFiltersModel
 {
-    public string? start { get; set; }
-    public string? end { get; set; }
-    public List<string>? icdRoots { get; set; }
+    public DateTime? start { get; set; }
+    public DateTime? end { get; set; }
+    public List<int>? icdRoots { get; set; }
 }

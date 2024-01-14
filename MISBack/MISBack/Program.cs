@@ -11,6 +11,8 @@ using MISBack.Services.ExceptionHandler;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
 using MISBack.Mappings;
+using Quartz.Impl;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,22 @@ builder.Services.AddScoped<IPatientsService, PatientsService>();
 builder.Services.AddScoped<IInspectionsService, InspectionsService>();
 builder.Services.AddScoped<IDictionariesService, DictionariesService>();
 builder.Services.AddScoped<IConsultationsService, ConsultationsService>();
+builder.Services.AddScoped<IReportsService, ReportsService>();
+builder.Services.AddScoped<EmailSender>();
+//builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+// Scheduler quartz
+var scheduler = new StdSchedulerFactory().GetScheduler().Result;
+scheduler.Start().Wait();
+
+var job = JobBuilder.Create<EmailSender>().Build();
+
+var trigger = TriggerBuilder.Create()
+    .WithIdentity("TriggerName", "GroupName")
+    .WithCronSchedule("0 0/5 * * * ?")
+    .Build();
+
+scheduler.ScheduleJob(job, trigger).Wait();
 
 // Auth
 builder.Services.AddSingleton<IAuthorizationHandler, ValidateTokenRequirementHandler>();

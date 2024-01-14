@@ -77,8 +77,7 @@ namespace MISBack.Services
             };
             icd10sList.records = new List<Icd10RecordModel>();
 
-            Icd10sEntity.GetRange(start, end);
-            foreach (Icd10 icd10 in Icd10sEntity)
+            foreach (Icd10 icd10 in Icd10sEntity.GetRange(start, end))
             {
                 icd10sList.records.Add(_mapper.Map<Icd10RecordModel>(icd10));
             }
